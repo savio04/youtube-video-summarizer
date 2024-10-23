@@ -14,5 +14,5 @@ func main() {
 		logger: logger,
 	}
 
-	app.newApp()
+	app.startHttpServer()
 }

@@ -13,7 +13,7 @@ type application struct {
 	logger *zap.SugaredLogger
 }
 
-func (app *application) newApp() http.Handler {
+func (app *application) startHttpServer() http.Handler {
 	server := chi.NewRouter()
 	server.Use(middleware.RequestID)
 	server.Use(middleware.RealIP)

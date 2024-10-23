@@ -1,4 +1,4 @@
-module github.com/savio04/first-api
+module github.com/savio04/youtube-video-summarizer
 
 go 1.22.2
 
