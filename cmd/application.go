@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -46,7 +47,9 @@ func (app *application) startHttpServer() http.Handler {
 
 	app.logger.Info("Starting server on port 8080...")
 
-	if err := http.ListenAndServe(":8080", server); err != nil {
+	port := os.Getenv("PORT")
+
+	if err := http.ListenAndServe(":"+port, server); err != nil {
 		app.logger.Fatal("Failed to start server", zap.Error(err))
 	}
 
