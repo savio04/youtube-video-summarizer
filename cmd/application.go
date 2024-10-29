@@ -6,7 +6,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/savio04/youtube-video-summarizer/internal/controllers"
-	"github.com/savio04/youtube-video-summarizer/internal/database"
 	"github.com/savio04/youtube-video-summarizer/internal/env"
 	"github.com/savio04/youtube-video-summarizer/internal/logger"
 	"go.uber.org/zap"
@@ -15,10 +14,6 @@ import (
 type application struct{}
 
 func (app *application) startHttpServer() http.Handler {
-	if err := env.LoadEnvs(); err != nil {
-		logger.AppLogger.Fatal("Coudn't load .env file")
-	}
-
 	server := chi.NewRouter()
 	server.Use(middleware.RequestID)
 	server.Use(middleware.RealIP)
@@ -26,17 +21,7 @@ func (app *application) startHttpServer() http.Handler {
 	server.Use(middleware.Recoverer)
 	server.Use(middleware.AllowContentType("application/json"))
 
-	if err := database.Init(); err != nil {
-		logger.AppLogger.Fatal("Failed to connect postgres", zap.Error(err))
-	}
-
-	server.Route("/v1", func(r chi.Router) {
-		healthController := controllers.NewHealthController()
-		r.Get("/health", healthController.Handler)
-
-		createVideoController := controllers.NewCreateVideoController()
-		r.Post("/videos", createVideoController.Handler)
-	})
+	server.Route("/v1", app.routesV1)
 
 	port := env.GetEnvOrDie("HTTP_PORT")
 
@@ -47,4 +32,12 @@ func (app *application) startHttpServer() http.Handler {
 	}
 
 	return server
+}
+
+func (app *application) routesV1(r chi.Router) {
+	healthController := controllers.NewHealthController()
+	r.Get("/health", healthController.Handler)
+
+	createVideoController := controllers.NewCreateVideoController()
+	r.Post("/videos", createVideoController.Handler)
 }
