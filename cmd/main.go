@@ -1,18 +1,17 @@
 package main
 
 import (
-	"go.uber.org/zap"
+	"github.com/savio04/youtube-video-summarizer/internal/logger"
 )
 
 func main() {
 	// Logger
-	logger := zap.Must(zap.NewProduction()).Sugar()
-	defer logger.Sync()
+	logger.InitAppLogger()
+
+	defer logger.AppLogger.Sync()
 
 	// Http server
-	app := &application{
-		logger: logger,
-	}
+	app := &application{}
 
 	app.startHttpServer()
 }

@@ -19,6 +19,36 @@ func NewCreateVideoUseCase(repo repositories.VideoRepository) *CreateVideoUseCas
 }
 
 func (useCase *CreateVideoUseCase) Execute(videoUrl string) (*entities.Video, error) {
+	videoId, err := useCase.getVideoIdByUrl(videoUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	videoAlreadyExists, err := useCase.findVideo(videoId)
+	if err != nil {
+		return nil, err
+	}
+
+	if videoAlreadyExists != nil {
+		return videoAlreadyExists, nil
+	}
+
+	newVideoData := &entities.Video{
+		Id:         nil,
+		ExternalId: videoId,
+		Url:        videoUrl,
+		Summary:    nil,
+	}
+
+	newVideo, err := useCase.videoRepository.Create(newVideoData)
+	if err != nil {
+		return nil, err
+	}
+
+	return newVideo, nil
+}
+
+func (useCase *CreateVideoUseCase) getVideoIdByUrl(videoUrl string) (*string, error) {
 	parsedURL, err := url.Parse(videoUrl)
 	if err != nil {
 		return nil, err
@@ -31,15 +61,12 @@ func (useCase *CreateVideoUseCase) Execute(videoUrl string) (*entities.Video, er
 		return nil, fmt.Errorf("video ID not found in the URL")
 	}
 
-	newVideoData := &entities.Video{
-		Id:         nil,
-		ExternalId: &videoID,
-		Url:        videoUrl,
-		Summary:    nil,
-	}
+	return &videoID, nil
+}
 
+func (useCase *CreateVideoUseCase) findVideo(videoId *string) (*entities.Video, error) {
 	params := &repositories.FindOneVideoParams{
-		ExternalId: videoID,
+		ExternalId: videoId,
 		Url:        nil,
 	}
 
@@ -52,10 +79,5 @@ func (useCase *CreateVideoUseCase) Execute(videoUrl string) (*entities.Video, er
 		return videoAlreadyExists, nil
 	}
 
-	newVideo, err := useCase.videoRepository.Create(newVideoData)
-	if err != nil {
-		return nil, err
-	}
-
-	return newVideo, nil
+	return nil, nil
 }

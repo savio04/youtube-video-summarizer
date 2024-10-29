@@ -4,7 +4,7 @@ import "github.com/savio04/youtube-video-summarizer/domains/video/entities"
 
 type FindOneVideoParams struct {
 	Url        *string
-	ExternalId string
+	ExternalId *string
 }
 
 type VideoRepository interface {

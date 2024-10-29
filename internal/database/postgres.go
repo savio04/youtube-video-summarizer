@@ -12,7 +12,6 @@ import (
 var Db *pgxpool.Pool
 
 func Init() error {
-	// TODO: And env variables
 	username := env.GetEnvOrDie("POSTGRES_USER")
 	password := env.GetEnvOrDie("POSTGRES_PASSWORD")
 	database := env.GetEnvOrDie("POSTGRES_DB")

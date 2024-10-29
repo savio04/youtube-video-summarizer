@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -9,16 +8,15 @@ import (
 	"github.com/savio04/youtube-video-summarizer/internal/controllers"
 	"github.com/savio04/youtube-video-summarizer/internal/database"
 	"github.com/savio04/youtube-video-summarizer/internal/env"
+	"github.com/savio04/youtube-video-summarizer/internal/logger"
 	"go.uber.org/zap"
 )
 
-type application struct {
-	logger *zap.SugaredLogger
-}
+type application struct{}
 
 func (app *application) startHttpServer() http.Handler {
 	if err := env.LoadEnvs(); err != nil {
-		app.logger.Fatal("Coudn't load .env file")
+		logger.AppLogger.Fatal("Coudn't load .env file")
 	}
 
 	server := chi.NewRouter()
@@ -29,20 +27,12 @@ func (app *application) startHttpServer() http.Handler {
 	server.Use(middleware.AllowContentType("application/json"))
 
 	if err := database.Init(); err != nil {
-		app.logger.Fatal("Failed to connect postgres", zap.Error(err))
+		logger.AppLogger.Fatal("Failed to connect postgres", zap.Error(err))
 	}
 
 	server.Route("/v1", func(r chi.Router) {
-		r.Get("/health", func(writer http.ResponseWriter, request *http.Request) {
-			data := map[string]string{
-				"status":  "ok",
-				"version": "v1",
-			}
-
-			writer.WriteHeader(http.StatusOK)
-
-			json.NewEncoder(writer).Encode(data)
-		})
+		healthController := controllers.NewHealthController()
+		r.Get("/health", healthController.Handler)
 
 		createVideoController := controllers.NewCreateVideoController()
 		r.Post("/videos", createVideoController.Handler)
@@ -50,10 +40,10 @@ func (app *application) startHttpServer() http.Handler {
 
 	port := env.GetEnvOrDie("HTTP_PORT")
 
-	app.logger.Info("Starting server on port " + port + "...")
+	logger.AppLogger.Info("Starting server on port " + port + "...")
 
 	if err := http.ListenAndServe(":"+port, server); err != nil {
-		app.logger.Fatal("Failed to start server", zap.Error(err))
+		logger.AppLogger.Fatal("Failed to start server", zap.Error(err))
 	}
 
 	return server
