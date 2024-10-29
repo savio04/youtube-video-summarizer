@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
+	usecases "github.com/savio04/youtube-video-summarizer/domains/video/useCases"
 	"github.com/savio04/youtube-video-summarizer/internal/database"
 	"github.com/savio04/youtube-video-summarizer/internal/database/repositories"
-	usecases "github.com/savio04/youtube-video-summarizer/internal/domains/video/useCases"
 )
 
 type CreateVideoController struct {
@@ -22,13 +22,36 @@ func NewCreateVideoController() *CreateVideoController {
 	}
 }
 
-func (controller *CreateVideoController) Handler(writer http.ResponseWriter, request *http.Request) {
-	controller.createVideoUseCase.Execute()
+type CreateVideoPayload struct {
+	Url string `json:"url" validate:"required,url"`
+}
 
-	writer.Header().Set("Content-Type", "application/json")
+func (controller *CreateVideoController) Handler(writer http.ResponseWriter, request *http.Request) {
+	var body CreateVideoPayload
+
+	decoder := json.NewDecoder(request.Body)
+
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&body); err != nil {
+		http.Error(writer, "Erro ao decodificar JSON", http.StatusBadRequest)
+		return
+	}
+
+	data, err := controller.createVideoUseCase.Execute(body.Url)
+	if err != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+
+		json.NewEncoder(writer).Encode(struct {
+			Message string `json:"message"`
+		}{Message: err.Error()})
+
+		return
+	}
+
 	writer.WriteHeader(http.StatusOK)
 
 	json.NewEncoder(writer).Encode(struct {
-		Message string `json:"message"`
-	}{Message: "Video created"})
+		Payload any `json:"payload"`
+	}{Payload: data})
 }

@@ -3,12 +3,12 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/savio04/youtube-video-summarizer/internal/controllers"
 	"github.com/savio04/youtube-video-summarizer/internal/database"
+	"github.com/savio04/youtube-video-summarizer/internal/env"
 	"go.uber.org/zap"
 )
 
@@ -17,14 +17,18 @@ type application struct {
 }
 
 func (app *application) startHttpServer() http.Handler {
+	if err := env.LoadEnvs(); err != nil {
+		app.logger.Fatal("Coudn't load .env file")
+	}
+
 	server := chi.NewRouter()
 	server.Use(middleware.RequestID)
 	server.Use(middleware.RealIP)
 	server.Use(middleware.Logger)
 	server.Use(middleware.Recoverer)
+	server.Use(middleware.AllowContentType("application/json"))
 
-	err := database.Init()
-	if err != nil {
+	if err := database.Init(); err != nil {
 		app.logger.Fatal("Failed to connect postgres", zap.Error(err))
 	}
 
@@ -35,7 +39,6 @@ func (app *application) startHttpServer() http.Handler {
 				"version": "v1",
 			}
 
-			writer.Header().Set("Content-Type", "application/json")
 			writer.WriteHeader(http.StatusOK)
 
 			json.NewEncoder(writer).Encode(data)
@@ -45,9 +48,9 @@ func (app *application) startHttpServer() http.Handler {
 		r.Post("/videos", createVideoController.Handler)
 	})
 
-	app.logger.Info("Starting server on port 8080...")
+	port := env.GetEnvOrDie("HTTP_PORT")
 
-	port := os.Getenv("PORT")
+	app.logger.Info("Starting server on port " + port + "...")
 
 	if err := http.ListenAndServe(":"+port, server); err != nil {
 		app.logger.Fatal("Failed to start server", zap.Error(err))

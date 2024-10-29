@@ -2,16 +2,23 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/savio04/youtube-video-summarizer/internal/env"
 )
 
 var Db *pgxpool.Pool
 
 func Init() error {
 	// TODO: And env variables
-	const DATABASE_URL string = "postgres://postgres:local@localhost:5432/postgres?"
+	username := env.GetEnvOrDie("POSTGRES_USER")
+	password := env.GetEnvOrDie("POSTGRES_PASSWORD")
+	database := env.GetEnvOrDie("POSTGRES_DB")
+	host := env.GetEnvOrDie("POSTGRES_HOST")
+
+	DATABASE_URL := fmt.Sprintf("postgres://%s:%s@%s:5432/%s", username, password, host, database)
 
 	dbConfig, err := pgxpool.ParseConfig(DATABASE_URL)
 	if err != nil {
