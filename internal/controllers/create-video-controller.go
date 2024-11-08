@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	usecases "github.com/savio04/youtube-video-summarizer/domains/video/useCases"
-	"github.com/savio04/youtube-video-summarizer/internal/database"
 	"github.com/savio04/youtube-video-summarizer/internal/database/repositories"
 )
 
@@ -14,7 +13,7 @@ type CreateVideoController struct {
 }
 
 func NewCreateVideoController() *CreateVideoController {
-	videoRepository := repositories.NewDbVideoRepository(database.Db)
+	videoRepository := repositories.NewDbVideoRepository()
 	createVideoUseCase := usecases.NewCreateVideoUseCase(videoRepository)
 
 	return &CreateVideoController{
