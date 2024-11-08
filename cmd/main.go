@@ -4,6 +4,7 @@ import (
 	"github.com/savio04/youtube-video-summarizer/internal/database"
 	"github.com/savio04/youtube-video-summarizer/internal/env"
 	"github.com/savio04/youtube-video-summarizer/internal/logger"
+	"github.com/savio04/youtube-video-summarizer/internal/queue"
 	"go.uber.org/zap"
 )
 
@@ -21,6 +22,11 @@ func main() {
 	// Database connection
 	if err := database.Init(); err != nil {
 		logger.AppLogger.Fatal("Failed to connect postgres", zap.Error(err))
+	}
+
+	// Queue
+	if err := queue.Init(); err != nil {
+		logger.AppLogger.Fatal("Failed to connect redis", zap.Error(err))
 	}
 
 	// Http server

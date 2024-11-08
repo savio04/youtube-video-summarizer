@@ -45,6 +45,8 @@ func (useCase *CreateVideoUseCase) Execute(videoUrl string) (*entities.Video, er
 		return nil, err
 	}
 
+	// TODO: Send video to queue
+
 	return newVideo, nil
 }
 
