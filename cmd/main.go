@@ -4,6 +4,7 @@ import (
 	"github.com/savio04/youtube-video-summarizer/internal/database"
 	"github.com/savio04/youtube-video-summarizer/internal/env"
 	"github.com/savio04/youtube-video-summarizer/internal/logger"
+	"github.com/savio04/youtube-video-summarizer/internal/queue"
 	"go.uber.org/zap"
 )
 
@@ -24,9 +25,9 @@ func main() {
 	}
 
 	// Queue
-	// if err := queue.Init(); err != nil {
-	// 	logger.AppLogger.Fatal("Failed to connect redis", zap.Error(err))
-	// }
+	if err := queue.Init(); err != nil {
+		logger.AppLogger.Fatal("Failed to connect redis", zap.Error(err))
+	}
 
 	// Http server
 	app := &application{}
