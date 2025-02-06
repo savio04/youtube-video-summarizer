@@ -3,11 +3,11 @@ package usecases
 import (
 	"fmt"
 	"net/url"
-	"strconv"
 
 	"github.com/savio04/youtube-video-summarizer/domains/video/entities"
 	"github.com/savio04/youtube-video-summarizer/domains/video/repositories"
 	"github.com/savio04/youtube-video-summarizer/internal/queue"
+	"github.com/savio04/youtube-video-summarizer/internal/utils"
 )
 
 type CreateVideoUseCase struct {
@@ -47,9 +47,10 @@ func (useCase *CreateVideoUseCase) Execute(videoUrl string) (*entities.Video, er
 		return nil, err
 	}
 
-	newVideoId := strconv.Itoa(*newVideo.Id)
-
-	queue.InsertIntoQueue("convert", newVideoId)
+	errQueue := queue.InsertIntoQueue(utils.QueueVideoProcessing, *videoId)
+	if errQueue != nil {
+		return nil, errQueue
+	}
 
 	return newVideo, nil
 }

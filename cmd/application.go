@@ -40,4 +40,7 @@ func (app *application) routesV1(r chi.Router) {
 
 	createVideoController := controllers.NewCreateVideoController()
 	r.Post("/videos", createVideoController.Handler)
+
+	getVideoController := controllers.NewGetVideoController()
+	r.Get("/videos/{videoId}", getVideoController.Handler)
 }
