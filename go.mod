@@ -3,6 +3,9 @@ module github.com/savio04/youtube-video-summarizer
 go 1.22.2
 
 require (
+	github.com/Andreychik32/ytdl v1.0.4 // indirect
+	github.com/antchfx/jsonquery v1.1.4 // indirect
+	github.com/antchfx/xpath v1.1.7 // indirect
 	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
@@ -21,6 +24,7 @@ require (
 	github.com/go-playground/validator/v10 v10.20.0 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/google/pprof v0.0.0-20241203143554-1e3fdc7de467 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -36,7 +40,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/redis/go-redis/v9 v9.7.0 // indirect
-	github.com/sashabaranov/go-openai v1.37.0 // indirect
+	github.com/rs/zerolog v1.19.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.uber.org/multierr v1.11.0 // indirect

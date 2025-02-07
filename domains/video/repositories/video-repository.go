@@ -7,7 +7,13 @@ type FindOneVideoParams struct {
 	ExternalId *string
 }
 
+type UpdateParams struct {
+	Summary *string
+	Status  *string
+}
+
 type VideoRepository interface {
 	Create(video *entities.Video) (*entities.Video, error)
 	FindOne(params *FindOneVideoParams) (*entities.Video, error)
+	UpdateByExternalId(externalId string, params *UpdateParams) error
 }

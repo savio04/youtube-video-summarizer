@@ -1,18 +1,29 @@
 package queue
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
+	"net/http"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"time"
 
-	"github.com/kkdai/youtube/v2"
 	"github.com/redis/go-redis/v9"
+	repositoriesDomain "github.com/savio04/youtube-video-summarizer/domains/video/repositories"
+	"github.com/savio04/youtube-video-summarizer/internal/database/repositories"
 	"github.com/savio04/youtube-video-summarizer/internal/env"
 	"github.com/savio04/youtube-video-summarizer/internal/utils"
 )
+
+type ResponseTrancription struct {
+	Text string `json:"text"`
+}
 
 var client redis.Client
 
@@ -65,98 +76,122 @@ func ConsumeQueue(queueName string) {
 		if len(result) > 1 {
 			item := result[1]
 			fmt.Printf("Processando item: %s\n", item)
-			//
-			// videoRepository := repositoriesdb.NewDbVideoRepository()
-			//
-			// video, err := videoRepository.FindOne(&repositories.FindOneVideoParams{
-			// 	ExternalId: &item,
-			// })
-			// if err != nil {
-			// 	fmt.Printf("Erro ao ler video %v", err)
-			// 	continue
-			// }
+
+			videoRepository := repositories.NewDbVideoRepository()
 
 			fmt.Println("Baixando áudio...")
 
-			err = downloadAudio(item)
+			filePath, err := downloadAudio(item)
 			if err != nil {
 				log.Println("Erro ao baixar áudio: ", err)
 				continue
 			}
 
-			fmt.Println("Áudio baixado! Enviando para transcrição...")
+			newStatus := "DOWNLOADED_AUDIO"
+
+			err = videoRepository.UpdateByExternalId(item, &repositoriesDomain.UpdateParams{
+				Status:  &newStatus,
+				Summary: nil,
+			})
+			if err != nil {
+				log.Println("Erro ao atualizar video: ", err)
+				continue
+			}
+
+			log.Println("Áudio baixado! Enviando para transcrição...")
+
+			transcription, err := transcribeAudio(*filePath)
+			if err != nil {
+				log.Println("Erro na transcrição do áudio: ", err)
+				continue
+			}
+
+			newStatus = "COMPLETED"
+
+			err = videoRepository.UpdateByExternalId(item, &repositoriesDomain.UpdateParams{
+				Summary: transcription,
+				Status:  &newStatus,
+			})
+			if err != nil {
+				log.Println("Erro ao atualizar video: ", err)
+				continue
+			}
+
+			log.Println("Item " + item + " finalizado!")
 		}
 	}
 }
 
-func downloadAudio(videoId string) error {
-	client := youtube.Client{}
+func downloadAudio(videoId string) (*string, error) {
+	filePath := "tmp/" + videoId + ".mp3"
+	cmd := exec.Command("yt-dlp", "-x", "--audio-format", "mp3", videoId, "-o", filePath)
 
-	video, err := client.GetVideo(videoId)
+	err := cmd.Run()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	formats := video.Formats.WithAudioChannels()
+	return &filePath, nil
+}
 
-	stream, _, err := client.GetStream(video, &formats[0])
+func transcribeAudio(filePath string) (*string, error) {
+	url := "https://api.groq.com/openai/v1/audio/transcriptions"
+	token := env.GetEnvOrDie("GROQ_API_KEY")
+
+	file, err := os.Open(filePath)
 	if err != nil {
-		return err
-	}
-
-	defer stream.Close()
-
-	file, err := os.Create("video.mp4")
-	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer file.Close()
 
-	_, err = io.Copy(file, stream)
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	part, err := writer.CreateFormFile("file", filepath.Base(filePath))
 	if err != nil {
-		return err
+		return nil, err
+	}
+	_, err = io.Copy(part, file)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
-}
+	_ = writer.WriteField("model", "whisper-large-v3")
+	_ = writer.WriteField("language", "pt")
 
-// func transcribeAudio(audioData []byte) (string, error) {
-// 	apiKey := os.Getenv("GROQ_API_KEY")
-// 	if apiKey == "" {
-// 		return "", fmt.Errorf("a variável de ambiente GROQ_API_KEY não está definida")
-// 	}
-//
-// 	client := openai.NewClient(apiKey)
-// 	ctx := context.Background()
-//
-// 	// Criar um arquivo temporário para armazenar o áudio
-// 	tempFile, err := os.CreateTemp("", "audio-*.mp3")
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	defer os.Remove(tempFile.Name()) // Excluir após uso
-//
-// 	_, err = tempFile.Write(audioData)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	tempFile.Close()
-//
-// 	// Criar a requisição para transcrição
-// 	req := openai.AudioRequest{
-// 		Model:       "whisper-large-v3",
-// 		FilePath:    tempFile.Name(),
-// 		Prompt:      "Specify context or spelling",
-// 		Format:      "json",
-// 		Language:    "en",
-// 		Temperature: 0.0,
-// 	}
-//
-// 	resp, err := client.CreateTranscription(ctx, req)
-// 	if err != nil {
-// 		return "", err
-// 	}
-//
-// 	return resp.Text, nil
-// }
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", url, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	result := &ResponseTrancription{}
+	decoder := json.NewDecoder(resp.Body)
+
+	err = decoder.Decode(result)
+	if err != nil {
+		return nil, err
+	}
+
+	response := result.Text
+
+	// Deletar o arquivo
+	utils.RemoveFile(filePath)
+
+	return &response, nil
+}
