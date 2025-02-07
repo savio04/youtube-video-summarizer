@@ -5,25 +5,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Resumo videos do youtbe</title>
-  <link href="css/style.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
 </head>
 
 <body>
-  <div>
-    <input id="url" type="text" name="url" value="">
-    <span id="error"></span>
-    <button type="button" onclick="getResume()">Enviar</button>
-  </div>
+  <div class="container">
+    <div class="content">
+      <div>
+        <input id="url" type="text" name="url" value="">
+        <span id="error"></span>
+        <button type="button" onclick="getResume()">Enviar</button>
+        <button id="themeToggle" onclick="toggleTheme()">Mudar Tema</button>
+      </div>
 
-  <div id="result">
-  </div>
+      <div class="result" id="result"></div>
 
-  <iframe id="videoyt" width="560" height="315" title="YouTube video player" frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    allowfullscreen>
-  </iframe>
+      <iframe class="videoyt" id="videoyt" width="560" height="315" title="YouTube video player" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+      </iframe>
 
-  <script src="script.js"></script>
+      <div class="loading" id="loading">
+        <div>
+          Estamos trabalhando nisso
+          <div class="dots">
+            <span>.</span>
+            <span>.</span>
+            <span>.</span>
+          </div>
+        </div>
+
+        <img
+          src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTJ0cXdtcmhyODV0b3FidXJ5cjAwdmU0cWw4bWt4a2VkOHNlZ2M4eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/yGqJ0KoLAOGjNGbX63/giphy.gif"
+          alt="">
+
+      </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 
 </html>
