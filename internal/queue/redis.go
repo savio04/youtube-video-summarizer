@@ -135,7 +135,7 @@ func downloadAudio(videoId string) (*string, error) {
 }
 
 func transcribeAudio(filePath string) (*string, error) {
-	url := "https://api.groq.com/openai/v1/audio/transcriptions"
+	url := env.GetEnvOrDie("GROQ_BASE_URL")
 	token := env.GetEnvOrDie("GROQ_API_KEY")
 
 	file, err := os.Open(filePath)

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resumo videos do youtbe</title>
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <div>
+    <input id="url" type="text" name="url" value="">
+    <span id="error"></span>
+    <button type="button" onclick="getResume()">Enviar</button>
+  </div>
+
+  <div id="result">
+  </div>
+
+  <iframe id="videoyt" width="560" height="315" title="YouTube video player" frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen>
+  </iframe>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

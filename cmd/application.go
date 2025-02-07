@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/savio04/youtube-video-summarizer/internal/controllers"
 	"github.com/savio04/youtube-video-summarizer/internal/env"
 	"github.com/savio04/youtube-video-summarizer/internal/logger"
@@ -15,6 +16,16 @@ type application struct{}
 
 func (app *application) startHttpServer() http.Handler {
 	server := chi.NewRouter()
+
+	server.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+
 	server.Use(middleware.RequestID)
 	server.Use(middleware.RealIP)
 	server.Use(middleware.Logger)
