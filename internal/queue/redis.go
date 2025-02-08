@@ -83,6 +83,7 @@ func ConsumeQueue(queueName string) {
 
 			filePath, err := downloadAudio(item)
 			if err != nil {
+				// TODO: Delete audio
 				log.Println("Erro ao baixar áudio: ", err)
 				continue
 			}
@@ -102,6 +103,7 @@ func ConsumeQueue(queueName string) {
 
 			transcription, err := transcribeAudio(*filePath)
 			if err != nil {
+				// TODO: Update status to failed
 				log.Println("Erro na transcrição do áudio: ", err)
 				continue
 			}
