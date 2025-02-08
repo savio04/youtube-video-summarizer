@@ -32,6 +32,21 @@ func (useCase *CreateVideoUseCase) Execute(videoUrl string) (*entities.Video, er
 	}
 
 	if videoAlreadyExists != nil {
+		if *videoAlreadyExists.Status == "FAILED" {
+			newStatus := "PROCESSING"
+
+			videoAlreadyExists.Status = &newStatus
+
+			useCase.videoRepository.UpdateByExternalId(*videoAlreadyExists.ExternalId, &repositories.UpdateParams{
+				Status: &newStatus,
+			})
+
+			errQueue := queue.InsertIntoQueue(utils.QueueVideoProcessing, *videoId)
+			if errQueue != nil {
+				return nil, errQueue
+			}
+		}
+
 		return videoAlreadyExists, nil
 	}
 

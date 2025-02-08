@@ -121,6 +121,13 @@ async function poolingGetVideo(extenalId) {
     footerElement.style.display = "block"
 
     loading(false)
+  } else if (data.payload.status === "FAILED") {
+    loading(false)
+    localStorage.removeItem("extenalId")
+    inputElement.removeAttribute("disabled")
+
+    window.alert("Falha ao fazer download do video, tente novamente! (Ou tente outra url)")
+
   } else {
     setTimeout(() => poolingGetVideo(extenalId), 1500)
   }
