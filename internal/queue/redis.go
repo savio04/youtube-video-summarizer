@@ -140,7 +140,7 @@ func ConsumeQueue(queueName string) {
 
 func downloadAudio(videoId string) (*string, error) {
 	filePath := "tmp/" + videoId + ".mp3"
-	cmd := exec.Command("yt-dlp", "-x", "--audio-format", "mp3", videoId, "-o", filePath)
+	cmd := exec.Command("yt-dlp", "-x", "--cookies", "cookies.txt", "--audio-format", "mp3", videoId, "-o", filePath)
 
 	err := cmd.Run()
 	if err != nil {

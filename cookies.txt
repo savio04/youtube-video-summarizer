@@ -1,0 +1,8 @@
+To download videos that require authentication, you need to provide your cookies in Netscape format.
+Follow these simple steps to generate your cookie file:
+
+📌 Steps to Export Cookies:
+1️⃣ Open your browser and go to Cookie Editor(https://cookie-editor.com/).
+2️⃣ Click "Export" and make sure to select the Netscape format.
+3️⃣ Save the exported cookies as cookies.txt.
+4️⃣ Place the file in the same directory where you are running yt-dlp.

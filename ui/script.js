@@ -81,7 +81,7 @@ async function getResume() {
 
   loading(true)
 
-  const response = await fetch("http://localhost:8080/v1/videos", {
+  const response = await fetch("https://yt-api.savioaraujogomes.com/v1/videos", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -99,7 +99,7 @@ async function getResume() {
 }
 
 async function poolingGetVideo(extenalId) {
-  const response = await fetch(`http://localhost:8080/v1/videos/${extenalId}`)
+  const response = await fetch(`https://yt-api.savioaraujogomes.com/v1/videos/${extenalId}`)
 
   if (!response.ok) {
     return
