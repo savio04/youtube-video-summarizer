@@ -140,6 +140,10 @@ table {
   --text-color: black;
   --button-background: #007bff;
   --button-text-color: white;
+  --button-hover: #0056b3;
+  --color-red-300: oklch(0.808 0.114 19.571);
+  --color-red-600: oklch(0.577 0.245 27.325);
+  --footer-background: #f8f9fa;
 }
 
 /* Tema escuro */
@@ -148,8 +152,11 @@ table {
   --text-color: white;
   --button-background: #444;
   --button-text-color: #ddd;
+  --button-hover: #666;
+  --color-red-300: oklch(0.808 0.114 19.571);
+  --color-red-600: oklch(0.577 0.245 27.325);
+  --footer-background: #444;
 }
-
 
 body {
   background-color: var(--background-color);
@@ -162,6 +169,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 
 .content {
@@ -172,16 +180,35 @@ body {
   flex-direction: column;
 }
 
-.result {
+.content-header {
   display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.result {
+  width: 80%;
+  display: none;
   gap: 10px;
   flex-direction: column;
   margin-top: 25px;
+  margin-bottom: 25px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  padding: 25px;
+  border-radius: 10px;
+}
+
+.result h2 {
+  align-self: center;
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 10px;
 }
 
 .result p {
   text-align: justify;
   text-indent: 35px;
+  font-size: 18px;
 }
 
 .loading {
@@ -190,6 +217,7 @@ body {
   font-family: Arial, sans-serif;
   white-space: nowrap;
   flex-direction: column;
+  margin-top: 40px;
 }
 
 .loading div {
@@ -234,4 +262,171 @@ body {
 
 .videoyt {
   display: none;
+  margin-bottom: 20px;
+}
+
+.theme-toggle {
+  width: 60px;
+  height: 30px;
+  background: var(--button-background);
+  border-radius: 50px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.toggle-slider {
+  width: 26px;
+  height: 26px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.toggle-slider i {
+  font-size: 14px;
+  color: #a19d9d;
+  transition: opacity 0.3s;
+}
+
+.dark-theme .toggle-slider {
+  transform: translateX(30px);
+}
+
+.form-group {
+  width: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group button {
+  width: 200px;
+  height: 40px;
+  align-self: center;
+  margin-top: 30px;
+  border: none;
+  background-color: var(--button-background);
+  color: var(--button-text-color);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+
+.form-group button:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.form-group button:active {
+  transform: translateY(1px);
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 25px;
+}
+
+.input-container label {
+  font-weight: bold;
+}
+
+.input-container input {
+  padding-left: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  height: 35px;
+  outline-color: var(--button-background);
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+
+.input-container input.error {
+  outline-color: var(--color-red-300);
+  box-shadow: 0 0 8px rgba(255, 0, 0, 1);
+}
+
+.input-container input::placeholder {
+  opacity: 0.5;
+}
+
+.error {
+  color: var(--color-red-600);
+}
+
+.footer {
+  display: none;
+  background-color: var(--footer-background);
+  color: var(--text-color);
+  text-align: center;
+  padding: 20px 0;
+  width: 100%;
+  position: relative;
+  margin-top: auto;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.social-links {
+  display: flex;
+  gap: 20px;
+}
+
+.social-link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 18px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.social-link:hover {
+  transform: translateY(-3px);
+}
+
+.social-link:active {
+  transform: translateY(1px);
+}
+
+@media(max-width: 700px) {
+  .form-group {
+    width: 350px;
+  }
+
+  .videoyt {
+    width: 100%;
+  }
+
+  .loading img {
+    width: 100%;
+  }
+}
+
+@media(max-width: 400px) {
+  .form-group {
+    width: auto;
+  }
 }
