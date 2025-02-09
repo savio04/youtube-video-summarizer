@@ -175,6 +175,7 @@ func transcribeAudio(filePath string) (*string, error) {
 
 	_ = writer.WriteField("model", "whisper-large-v3")
 	_ = writer.WriteField("language", "pt")
+	_ = writer.WriteField("prompt", "Resuma a transcrição do vídeo em uma lista de tópicos organizados, destacando os principais assuntos abordados. Cada tópico deve representar um ponto-chave da conversa.")
 
 	err = writer.Close()
 	if err != nil {
