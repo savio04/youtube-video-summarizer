@@ -427,6 +427,6 @@ body {
 
 @media(max-width: 400px) {
   .form-group {
-    width: auto;
+    width: 280px;
   }
 }

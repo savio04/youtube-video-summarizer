@@ -22,7 +22,8 @@ func NewCreateVideoController() *CreateVideoController {
 }
 
 type CreateVideoPayload struct {
-	Url string `json:"url" validate:"required,url"`
+	Url        string `json:"url" validate:"required,url"`
+	ExternalId string `json:"ExternalId" validate:"required"`
 }
 
 func (controller *CreateVideoController) Handler(writer http.ResponseWriter, request *http.Request) {
@@ -37,7 +38,7 @@ func (controller *CreateVideoController) Handler(writer http.ResponseWriter, req
 		return
 	}
 
-	data, err := controller.createVideoUseCase.Execute(body.Url)
+	data, err := controller.createVideoUseCase.Execute(body.Url, body.ExternalId)
 	if err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
 

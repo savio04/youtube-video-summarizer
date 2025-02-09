@@ -2,7 +2,6 @@ package usecases
 
 import (
 	"fmt"
-	"net/url"
 
 	"github.com/savio04/youtube-video-summarizer/domains/video/entities"
 	"github.com/savio04/youtube-video-summarizer/domains/video/repositories"
@@ -20,13 +19,10 @@ func NewCreateVideoUseCase(repo repositories.VideoRepository) *CreateVideoUseCas
 	}
 }
 
-func (useCase *CreateVideoUseCase) Execute(videoUrl string) (*entities.Video, error) {
-	videoId, err := useCase.getVideoIdByUrl(videoUrl)
-	if err != nil {
-		return nil, err
-	}
+func (useCase *CreateVideoUseCase) Execute(videoUrl string, externalId string) (*entities.Video, error) {
+	fmt.Println("externalId", externalId)
 
-	videoAlreadyExists, err := useCase.findVideo(videoId)
+	videoAlreadyExists, err := useCase.findVideo(&externalId)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +37,7 @@ func (useCase *CreateVideoUseCase) Execute(videoUrl string) (*entities.Video, er
 				Status: &newStatus,
 			})
 
-			errQueue := queue.InsertIntoQueue(utils.QueueVideoProcessing, *videoId)
+			errQueue := queue.InsertIntoQueue(utils.QueueVideoProcessing, externalId)
 			if errQueue != nil {
 				return nil, errQueue
 			}
@@ -52,7 +48,7 @@ func (useCase *CreateVideoUseCase) Execute(videoUrl string) (*entities.Video, er
 
 	newVideoData := &entities.Video{
 		Id:         nil,
-		ExternalId: videoId,
+		ExternalId: &externalId,
 		Url:        videoUrl,
 		Summary:    nil,
 	}
@@ -62,28 +58,12 @@ func (useCase *CreateVideoUseCase) Execute(videoUrl string) (*entities.Video, er
 		return nil, err
 	}
 
-	errQueue := queue.InsertIntoQueue(utils.QueueVideoProcessing, *videoId)
+	errQueue := queue.InsertIntoQueue(utils.QueueVideoProcessing, externalId)
 	if errQueue != nil {
 		return nil, errQueue
 	}
 
 	return newVideo, nil
-}
-
-func (useCase *CreateVideoUseCase) getVideoIdByUrl(videoUrl string) (*string, error) {
-	parsedURL, err := url.Parse(videoUrl)
-	if err != nil {
-		return nil, err
-	}
-
-	queryParams := parsedURL.Query()
-	videoID := queryParams.Get("v")
-
-	if videoID == "" {
-		return nil, fmt.Errorf("video ID not found in the URL")
-	}
-
-	return &videoID, nil
 }
 
 func (useCase *CreateVideoUseCase) findVideo(videoId *string) (*entities.Video, error) {

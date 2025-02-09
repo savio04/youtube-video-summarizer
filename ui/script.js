@@ -30,17 +30,13 @@ function verifyLocalStorage() {
 
 verifyLocalStorage()
 
-function isYouTubeUrl(url) {
-  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)\/(watch\?v=[a-zA-Z0-9_-]+|(?:v|e(?:mbed)?)\/[a-zA-Z0-9_-]+)(?!.*\/shorts)/i;
-  return youtubeRegex.test(url);
-}
+function extractYouTubeVideoId(url) {
+  const regex =
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/ ]{11})/;
 
-function getExtenalIdFromUrl(url) {
-  const [, possibleExternalId] = url.split("v=")
+  const match = url.match(regex);
 
-  const [extenalId,] = possibleExternalId.split("&");
-
-  return extenalId
+  return match ? match[1] : null;
 }
 
 function loading(value) {
@@ -62,14 +58,14 @@ async function getResume() {
     return
   }
 
-  if (!isYouTubeUrl(inputElement.value)) {
+  const extenalId = extractYouTubeVideoId(inputElement.value)
+
+  if (!extenalId) {
     inputElement.classList.add("error")
     errorElement.innerText = "Url inválida"
 
     return
   }
-
-  const extenalId = getExtenalIdFromUrl(inputElement.value)
 
   const alredyResult = resultElement.getAttribute("extenal_id")
 
@@ -81,55 +77,67 @@ async function getResume() {
 
   loading(true)
 
-  const response = await fetch("https://yt-api.savioaraujogomes.com/v1/videos", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ url: inputElement.value })
-  })
+  try {
+    const response = await fetch("https://yt-api.savioaraujogomes.com/v1/videos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ url: inputElement.value, extenalId })
+    })
 
-  if (!response.ok) {
-    return
+    if (!response.ok) {
+      return
+    }
+
+    const data = await response.json()
+
+    await poolingGetVideo(data.payload.external_id)
+  } catch (error) {
+    localStorage.removeItem("extenalId")
+    loading(false)
+    window.alert("Falha ao enviar dados")
   }
-
-  const data = await response.json()
-
-  await poolingGetVideo(data.payload.external_id)
 }
 
 async function poolingGetVideo(extenalId) {
-  const response = await fetch(`https://yt-api.savioaraujogomes.com/v1/videos/${extenalId}`)
+  try {
+    const response = await fetch(`https://yt-api.savioaraujogomes.com/v1/videos/${extenalId}`)
 
-  if (!response.ok) {
-    return
-  }
+    if (!response.ok) {
+      return
+    }
 
-  const data = await response.json()
+    const data = await response.json()
 
-  if (data.payload.status === "COMPLETED") {
+    if (data.payload.status === "COMPLETED") {
+      localStorage.removeItem("extenalId")
+      inputElement.removeAttribute("disabled")
+
+      const text = formatText(data.payload.summary)
+
+      resultElement.innerHTML = `<h2>Resumo</h2> ${text}`
+      resultElement.setAttribute("extenal_id", data.payload.external_id)
+      resultElement.style.display = "flex"
+      videoElement.src = `https://www.youtube.com/embed/${data.payload.external_id}`
+      videoElement.style.display = "block"
+      footerElement.style.display = "block"
+
+      loading(false)
+    } else if (data.payload.status === "FAILED") {
+      loading(false)
+      localStorage.removeItem("extenalId")
+      inputElement.removeAttribute("disabled")
+
+      window.alert("Falha ao fazer download do video, tente novamente! (Ou tente outra url)")
+
+    } else {
+      setTimeout(() => poolingGetVideo(extenalId), 1500)
+    }
+  } catch (error) {
     localStorage.removeItem("extenalId")
-    inputElement.removeAttribute("disabled")
-
-    const text = formatText(data.payload.summary)
-
-    resultElement.innerHTML = `<h2>Resumo</h2> ${text}`
-    resultElement.setAttribute("extenal_id", data.payload.external_id)
-    resultElement.style.display = "flex"
-    videoElement.src = `https://www.youtube.com/embed/${data.payload.external_id}`
-    videoElement.style.display = "block"
-    footerElement.style.display = "block"
-
     loading(false)
-  } else if (data.payload.status === "FAILED") {
-    loading(false)
-    localStorage.removeItem("extenalId")
-    inputElement.removeAttribute("disabled")
-
-    window.alert("Falha ao fazer download do video, tente novamente! (Ou tente outra url)")
-
-  } else {
-    setTimeout(() => poolingGetVideo(extenalId), 1500)
+    window.alert("Falha ao enviar dados")
   }
 }
 
