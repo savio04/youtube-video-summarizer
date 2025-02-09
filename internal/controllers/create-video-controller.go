@@ -23,7 +23,7 @@ func NewCreateVideoController() *CreateVideoController {
 
 type CreateVideoPayload struct {
 	Url        string `json:"url" validate:"required,url"`
-	ExternalId string `json:"ExternalId" validate:"required"`
+	ExternalId string `json:"externalId" validate:"required"`
 }
 
 func (controller *CreateVideoController) Handler(writer http.ResponseWriter, request *http.Request) {
