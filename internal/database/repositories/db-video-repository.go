@@ -85,8 +85,6 @@ func (dbVideo *DbVideoRepository) UpdateByExternalId(externalId string, params *
 
 	args = append(args, externalId)
 
-	fmt.Println(args...)
-
 	_, err := database.Db.Exec(
 		context.Background(),
 		query,

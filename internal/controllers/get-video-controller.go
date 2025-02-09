@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -25,8 +24,6 @@ func NewGetVideoController() *GetVideoController {
 
 func (controller *GetVideoController) Handler(writer http.ResponseWriter, request *http.Request) {
 	userID := chi.URLParam(request, "videoId")
-
-	fmt.Printf("here %s", userID)
 
 	data, err := controller.getVideoUseCase.Execute(&userID)
 	if err != nil {

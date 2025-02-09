@@ -1,8 +1,6 @@
 package usecases
 
 import (
-	"fmt"
-
 	"github.com/savio04/youtube-video-summarizer/domains/video/entities"
 	"github.com/savio04/youtube-video-summarizer/domains/video/repositories"
 	"github.com/savio04/youtube-video-summarizer/internal/queue"
@@ -20,8 +18,6 @@ func NewCreateVideoUseCase(repo repositories.VideoRepository) *CreateVideoUseCas
 }
 
 func (useCase *CreateVideoUseCase) Execute(videoUrl string, externalId string) (*entities.Video, error) {
-	fmt.Println("externalId", externalId)
-
 	videoAlreadyExists, err := useCase.findVideo(&externalId)
 	if err != nil {
 		return nil, err
