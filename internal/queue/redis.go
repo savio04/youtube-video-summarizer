@@ -163,6 +163,8 @@ func downloadAudio(videoId string) (*string, error) {
 }
 
 func transcribeAudio(filePath string) (*string, error) {
+	fmt.Println("Arquivo sendo enviado:", filePath)
+
 	url := env.GetEnvOrDie("GROQ_BASE_URL")
 	token := env.GetEnvOrDie("GROQ_API_KEY")
 
@@ -172,6 +174,7 @@ func transcribeAudio(filePath string) (*string, error) {
 	}
 
 	defer file.Close()
+	defer utils.RemoveFile(filePath)
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -218,10 +221,8 @@ func transcribeAudio(filePath string) (*string, error) {
 
 	response := result.Text
 
-	// Deletar o arquivo
-	utils.RemoveFile(filePath)
-
 	if response == "" {
+		log.Println("transcription is empty")
 		return nil, fmt.Errorf("transcription is empty")
 	}
 
