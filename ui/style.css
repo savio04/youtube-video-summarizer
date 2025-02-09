@@ -423,6 +423,10 @@ body {
   .loading img {
     width: 100%;
   }
+
+  .result {
+    width: 100%;
+  }
 }
 
 @media(max-width: 400px) {
