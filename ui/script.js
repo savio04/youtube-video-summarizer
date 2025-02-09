@@ -58,9 +58,9 @@ async function getResume() {
     return
   }
 
-  const extenalId = extractYouTubeVideoId(inputElement.value)
+  const externalId = extractYouTubeVideoId(inputElement.value)
 
-  if (!extenalId) {
+  if (!externalId) {
     inputElement.classList.add("error")
     errorElement.innerText = "Url inválida"
 
@@ -69,9 +69,9 @@ async function getResume() {
 
   const alredyResult = resultElement.getAttribute("extenal_id")
 
-  if (alredyResult && alredyResult === extenalId) return
+  if (alredyResult && alredyResult === externalId) return
 
-  localStorage.setItem("extenalId", extenalId)
+  localStorage.setItem("extenalId", externalId)
 
   inputElement.setAttribute("disabled", true)
 
@@ -83,7 +83,7 @@ async function getResume() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ url: inputElement.value, extenalId })
+      body: JSON.stringify({ url: inputElement.value, externalId })
     })
 
     if (!response.ok) {
