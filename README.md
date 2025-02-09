@@ -39,6 +39,8 @@ $ cp .env-example .env
 # Crie os containers
 $ sudo docker-compose up -d
 
+# Veja o arquivo cookies.txt para instruções sobre como preencher os cookies
+
 # Execute o projeto
 $ make run
 ```
