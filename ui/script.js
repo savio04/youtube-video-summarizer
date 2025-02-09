@@ -87,6 +87,9 @@ async function getResume() {
     })
 
     if (!response.ok) {
+      localStorage.removeItem("extenalId")
+      loading(false)
+      window.alert("Falha ao enviar dados")
       return
     }
 
@@ -105,6 +108,10 @@ async function poolingGetVideo(extenalId) {
     const response = await fetch(`https://yt-api.savioaraujogomes.com/v1/videos/${extenalId}`)
 
     if (!response.ok) {
+      localStorage.removeItem("extenalId")
+      loading(false)
+      window.alert("Falha ao enviar dados")
+
       return
     }
 
