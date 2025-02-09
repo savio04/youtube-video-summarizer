@@ -1,3 +1,5 @@
+window.API_URL = "http://localhost:8080"
+
 const bodyElement = document.body
 const toggleSlider = document.querySelector('.toggle-slider i')
 
@@ -78,7 +80,7 @@ async function getResume() {
   loading(true)
 
   try {
-    const response = await fetch("https://yt-api.savioaraujogomes.com/v1/videos", {
+    const response = await fetch(`${window.API_URL}/v1/videos`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -105,7 +107,7 @@ async function getResume() {
 
 async function poolingGetVideo(extenalId) {
   try {
-    const response = await fetch(`https://yt-api.savioaraujogomes.com/v1/videos/${extenalId}`)
+    const response = await fetch(`${window.API_URL}/v1/videos`)
 
     if (!response.ok) {
       localStorage.removeItem("extenalId")
@@ -121,9 +123,7 @@ async function poolingGetVideo(extenalId) {
       localStorage.removeItem("extenalId")
       inputElement.removeAttribute("disabled")
 
-      const text = formatText(data.payload.summary)
-
-      resultElement.innerHTML = `<h2>Resumo</h2> ${text}`
+      resultElement.innerHTML = `<h2>Resumo</h2> ${data.payload.summary}`
       resultElement.setAttribute("extenal_id", data.payload.external_id)
       resultElement.style.display = "flex"
       videoElement.src = `https://www.youtube.com/embed/${data.payload.external_id}`
@@ -146,37 +146,6 @@ async function poolingGetVideo(extenalId) {
     loading(false)
     window.alert("Falha ao enviar dados")
   }
-}
-
-function formatText(text) {
-  const items = text.split(".")
-
-  const groupSize = 5
-  let groupCount = 0
-
-  let newText = ""
-  let group = ""
-
-  for (let item of items) {
-    item += `${item}.`
-    groupCount += 1
-
-    if (groupSize === groupCount) {
-      group = `<p>${group}</p>`
-      newText += group
-
-      groupCount = 0
-      group = ""
-    } else {
-      group += item
-    }
-  }
-
-  if (groupCount > 0) {
-    newText += `<p>${group}</p>`
-  }
-
-  return newText
 }
 
 function toggleTheme() {

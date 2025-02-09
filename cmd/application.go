@@ -18,7 +18,7 @@ func (app *application) startHttpServer() http.Handler {
 	server := chi.NewRouter()
 
 	server.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://yt.savioaraujogomes.com"},
+		AllowedOrigins:   []string{env.GetEnvOrDie("FRONT_BASE_URL")},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
