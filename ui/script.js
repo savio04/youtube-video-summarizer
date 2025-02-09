@@ -107,7 +107,7 @@ async function getResume() {
 
 async function poolingGetVideo(extenalId) {
   try {
-    const response = await fetch(`${window.API_URL}/v1/videos`)
+    const response = await fetch(`${window.API_URL}/v1/videos/${extenalId}`)
 
     if (!response.ok) {
       localStorage.removeItem("extenalId")
@@ -123,7 +123,9 @@ async function poolingGetVideo(extenalId) {
       localStorage.removeItem("extenalId")
       inputElement.removeAttribute("disabled")
 
-      resultElement.innerHTML = `<h2>Resumo</h2> ${data.payload.summary}`
+      const text = formatText(data.payload.summary)
+
+      resultElement.innerHTML = `<h2>Resumo</h2> ${text}`
       resultElement.setAttribute("extenal_id", data.payload.external_id)
       resultElement.style.display = "flex"
       videoElement.src = `https://www.youtube.com/embed/${data.payload.external_id}`
@@ -146,6 +148,18 @@ async function poolingGetVideo(extenalId) {
     loading(false)
     window.alert("Falha ao enviar dados")
   }
+}
+
+function formatText(text) {
+  const items = text.split("\n\n")
+
+  let newText = ""
+
+  for (const item of items) {
+    newText += `<p>${item}</p>`
+  }
+
+  return newText
 }
 
 function toggleTheme() {
