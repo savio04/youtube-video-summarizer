@@ -10,8 +10,7 @@ Este é um projeto em Go que permite buscar vídeos no YouTube por URL, extrair 
 
 [Demo](https://sistema-solar.fun)
 
-![Imagem da interface](https://github.com/savio04/youtube-video-summarizer/blob/main/ui/public/image_1.png)
-![Imagem da interface](https://github.com/savio04/youtube-video-summarizer/blob/main/ui/public/image_2.png)
+![Animação do projeto](https://github.com/savio04/youtube-video-summarizer/blob/main/ui/public/gif.gif)
 
 ## Execução do projeto 
 
