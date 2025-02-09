@@ -221,6 +221,10 @@ func transcribeAudio(filePath string) (*string, error) {
 	// Deletar o arquivo
 	utils.RemoveFile(filePath)
 
+	if response == "" {
+		return nil, fmt.Errorf("transcription is empty")
+	}
+
 	return &response, nil
 }
 
@@ -229,9 +233,9 @@ func summarizeText(text string) (string, error) {
 	token := env.GetEnvOrDie("GROQ_API_KEY")
 
 	requestBody, _ := json.Marshal(map[string]interface{}{
-		"model": "mixtral-8x7b-32768",
+		"model": "llama-3.3-70b-versatile",
 		"messages": []map[string]string{
-			{"role": "system", "content": "Resuma sempre em português do brasil a transcrição do vídeo destacando os principais assuntos abordados. Estruture o resumo em parágrafos bem organizados, separando cada ideia com uma quebra de linha (\n\n)."},
+			{"role": "system", "content": "Resuma sempre em português a transcrição do vídeo destacando os principais assuntos abordados. Estruture o resumo em parágrafos bem organizados, separando cada ideia com uma quebra de linha (\n\n)."},
 			{"role": "user", "content": text},
 		},
 		"temperature": 0.5,
@@ -252,7 +256,7 @@ func summarizeText(text string) (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("falha no resumo: %s", resp.Status)
+		return "", err
 	}
 
 	var result map[string]interface{}

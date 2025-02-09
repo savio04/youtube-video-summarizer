@@ -2,4 +2,4 @@ bin
 .env
 tmp
 data
-cookies.text
+cookies.txt
