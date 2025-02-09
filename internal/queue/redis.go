@@ -139,10 +139,7 @@ func ConsumeQueue(queueName string) {
 
 			log.Println("Resumo feito com sucesso")
 
-			err = videoRepository.UpdateByExternalId(item, &repositoriesDomain.UpdateParams{
-				Summary: &summary,
-				Status:  &newStatus,
-			})
+			err = videoRepository.UpdateByExternalId(item, &repositoriesDomain.UpdateParams{Summary: &summary, Status: &newStatus})
 			if err != nil {
 				log.Println("Erro ao atualizar video: ", err)
 				continue
@@ -234,7 +231,7 @@ func summarizeText(text string) (string, error) {
 	requestBody, _ := json.Marshal(map[string]interface{}{
 		"model": "mixtral-8x7b-32768",
 		"messages": []map[string]string{
-			{"role": "system", "content": "Resuma a transcrição do vídeo destacando os principais assuntos abordados. Estruture o resumo em parágrafos bem organizados, separando cada ideia com uma quebra de linha (\n\n)."},
+			{"role": "system", "content": "Resuma sempre em português do brasil a transcrição do vídeo destacando os principais assuntos abordados. Estruture o resumo em parágrafos bem organizados, separando cada ideia com uma quebra de linha (\n\n)."},
 			{"role": "user", "content": text},
 		},
 		"temperature": 0.5,
