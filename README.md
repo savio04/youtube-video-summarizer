@@ -2,15 +2,15 @@
 
 Este é um projeto em Go que permite buscar vídeos no YouTube por URL, extrair a transcrição do áudio utilizando o **Groq**, e gerar um resumo de seu conteúdo.
 
+[Demo](https://yt.savioaraujogomes.com)
+
+![Animação do projeto](https://github.com/savio04/youtube-video-summarizer/blob/main/ui/public/gif.gif)
+
 ## Funcionalidades
 
 - Extrai as legendas/transcrições de vídeos do YouTube utilizando **Groq**.
 - Gera um resumo das transcrições extraídas.
 - Suporte a vídeos em múltiplos idiomas (desde que legendas ou transcrições estejam disponíveis).
-
-[Demo](https://yt.savioaraujogomes.com)
-
-![Animação do projeto](https://github.com/savio04/youtube-video-summarizer/blob/main/ui/public/gif.gif)
 
 ## Execução do projeto 
 
