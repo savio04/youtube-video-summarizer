@@ -1,6 +1,6 @@
 # YouTube Video Summarizer
 
-Este é um projeto em Go que permite buscar vídeos no YouTube por URL, extrair a transcrição do áudio utilizando o **Groq**, e gerar um resumo de seu conteúdo.
+Este é um projeto em Go que permite buscar vídeos no YouTube por URL, extrair a transcrição do áudio utilizando o **Whisper**, e gerar um resumo de seu conteúdo.
 
 [Demo](https://yt.savioaraujogomes.com)
 
@@ -8,7 +8,7 @@ Este é um projeto em Go que permite buscar vídeos no YouTube por URL, extrair 
 
 ## Funcionalidades
 
-- Extrai as legendas/transcrições de vídeos do YouTube utilizando **Groq**.
+- Extrai as legendas/transcrições de vídeos do YouTube utilizando **Whisper**.
 - Gera um resumo das transcrições extraídas.
 - Suporte a vídeos em múltiplos idiomas (desde que legendas ou transcrições estejam disponíveis).
 
