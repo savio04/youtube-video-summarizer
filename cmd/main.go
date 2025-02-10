@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/savio04/youtube-video-summarizer/internal/cron"
 	"github.com/savio04/youtube-video-summarizer/internal/database"
 	"github.com/savio04/youtube-video-summarizer/internal/env"
 	"github.com/savio04/youtube-video-summarizer/internal/logger"
@@ -28,6 +29,9 @@ func main() {
 	if err := queue.Init(); err != nil {
 		logger.AppLogger.Fatal("Failed to connect redis", zap.Error(err))
 	}
+
+	// Cron
+	go cron.Execute()
 
 	// Http server
 	app := &application{}
