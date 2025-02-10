@@ -29,9 +29,6 @@ func main() {
 		logger.AppLogger.Fatal("Failed to connect redis", zap.Error(err))
 	}
 
-	// Cron
-	// go cron.Execute()
-
 	// Http server
 	app := &application{}
 
