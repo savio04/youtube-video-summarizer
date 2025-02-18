@@ -54,4 +54,7 @@ func (app *application) routesV1(r chi.Router) {
 
 	getVideoController := controllers.NewGetVideoController()
 	r.Get("/videos/{videoId}", getVideoController.Handler)
+
+	verifyTokenController := controllers.NewVerifyTokenController()
+	r.Post("/reptcha", verifyTokenController.Handler)
 }

@@ -52,7 +52,75 @@ function loading(value) {
   }
 }
 
+function setCookie(name, value) {
+  const date = new Date()
+
+  date.setTime(date.getTime() + (2 * 60 * 1000))
+
+  const expires = `expires=${date.toUTCString()}`
+
+  document.cookie = `${name}=${value}; ${expires}; path=/`
+}
+
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
+
+  if (match) return match[2]
+
+  return null
+}
+
+function clearCookie(name) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`
+}
+
+async function getToken() {
+  return new Promise((resolve, reject) => {
+    grecaptcha.ready(function() {
+      grecaptcha.execute('6LfifNcqAAAAAJ0Ztlfa0TUgp5rqLYh9y8LAt_ab', { action: 'submit' }).then(function(token) {
+        resolve(token)
+      })
+        .catch(error => reject(error))
+    })
+  })
+}
+
+async function verifyToken() {
+  let token = getCookie("token")
+
+  if (!token) {
+    try {
+      token = await getToken()
+
+      console.log({ token })
+    } catch (error) {
+      window.alert(`Erro ao executar o reCAPTCHA: ${error}`)
+      throw error
+    }
+  }
+
+  //Verify in backend
+  try {
+    await fetch(`${window.API_URL}/v1/reptcha`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ token })
+    })
+
+    setCookie("token", token)
+  } catch (error) {
+    window.alert(`Token invalido`)
+    clearCookie("token")
+    throw error
+  }
+
+}
+
 async function getResume() {
+  await verifyToken()
+
   if (inputElement.value.trim() === "") {
     inputElement.classList.add("error")
     errorElement.innerText = "Url obrigatória"
@@ -185,3 +253,15 @@ function clearInputError() {
   inputElement.classList.remove("error")
   errorElement.innerText = ""
 }
+
+
+//RECAPCHA
+// function onClick(e) {
+//   e.preventDefault();
+//   grecaptcha.ready(function() {
+//     grecaptcha.execute('6LfifNcqAAAAAJ0Ztlfa0TUgp5rqLYh9y8LAt_ab', { action: 'submit' }).then(function(token) {
+//       // Add your logic to submit to your backend server here.
+//       console.log({ token })
+//     });
+//   });
+// }
