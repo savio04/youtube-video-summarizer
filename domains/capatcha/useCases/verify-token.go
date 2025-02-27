@@ -17,11 +17,11 @@ func NewVerifyTokenUseCase() *VerifyTokenUseCase {
 }
 
 func (useCase *VerifyTokenUseCase) Execute(token string) error {
-	const baseUrl = env.GetEnvOrDie("RECAPTCHA_BASE_URL")
-	const secret = env.GetEnvOrDie("RECAPTCHA_SECRET_TOKEN")
+	baseUrl := env.GetEnvOrDie("RECAPTCHA_BASE_URL")
+	secret := env.GetEnvOrDie("RECAPTCHA_SECRET_TOKEN")
 
 	requestBody, _ := json.Marshal(map[string]interface{}{
-		"secret":   "6LfifNcqAAAAAFb8HNuvB9CpGOKPVkKgNAuvz3Do",
+		"secret":   secret,
 		"response": token,
 	})
 
@@ -29,7 +29,7 @@ func (useCase *VerifyTokenUseCase) Execute(token string) error {
 	data.Set("username", "teste")
 	data.Set("password", "123456")
 
-	req, err := http.NewRequest("POST", "https://www.google.com/recaptcha/api/siteverify", bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", baseUrl, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return err
 	}
