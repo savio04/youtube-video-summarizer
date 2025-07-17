@@ -23,6 +23,6 @@ jobs:
           script: |
             cd /var/www/youtube-video-summarizer
             git pull 
-            make run
+            make build
             sudo systemctl restart my-app
 

@@ -154,6 +154,9 @@ func downloadAudio(videoId string) (*string, error) {
 	filePath := "tmp/" + videoId + ".mp3"
 	cmd := exec.Command("yt-dlp", "-x", "--cookies", "cookies.txt", "--audio-format", "mp3", videoId, "-o", filePath)
 
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
 	err := cmd.Run()
 	if err != nil {
 		return nil, err
