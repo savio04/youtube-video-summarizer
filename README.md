@@ -16,7 +16,7 @@ O **YouTube Video Summarizer** é uma aplicação desenvolvida em **Go** que per
 - 🧑‍💻 Pesquisas acadêmicas ou profissionais.  
 - 📰 Produção de insights a partir de vídeos informativos.  
 
-🌐 [Acesse a aplicação online](https://yt.savioaraujogomes.com)  
+🌐 [Acesse a aplicação online](https://yt.sistema-solar.fun)  
 
 ---
 
