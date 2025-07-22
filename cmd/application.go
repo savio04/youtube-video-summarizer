@@ -6,9 +6,11 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/savio04/youtube-video-summarizer/internal/controllers"
 	"github.com/savio04/youtube-video-summarizer/internal/env"
 	"github.com/savio04/youtube-video-summarizer/internal/logger"
+	"github.com/savio04/youtube-video-summarizer/internal/middlewares"
 	"go.uber.org/zap"
 )
 
@@ -32,6 +34,8 @@ func (app *application) startHttpServer() http.Handler {
 	server.Use(middleware.Recoverer)
 	server.Use(middleware.AllowContentType("application/json"))
 
+	server.Handle("/metrics", promhttp.Handler())
+
 	server.Route("/v1", app.routesV1)
 
 	port := env.GetEnvOrDie("HTTP_PORT")
@@ -46,6 +50,8 @@ func (app *application) startHttpServer() http.Handler {
 }
 
 func (app *application) routesV1(r chi.Router) {
+	r.Use(middlewares.Metrics)
+
 	healthController := controllers.NewHealthController()
 	r.Get("/health", healthController.Handler)
 
